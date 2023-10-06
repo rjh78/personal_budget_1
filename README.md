@@ -18,3 +18,10 @@
     none
     
 ## License: 
+
+##   To Do List:
+    1) refactor code - lots of redundant error checking
+    2) implement "total budget" and track that with real-time
+        updates
+    3) write & read envelope data to/from a database or file to preserve
+        data between server sessions
