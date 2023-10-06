@@ -1,3 +1,19 @@
+/*
+  Author: Robert Hermann
+  Date: October 5, 2023
+  Assignment: Personal Budget, part 1 (Codecademy Back End Engineer path)
+  Description: personal budget API to track envelopes of 
+    money. Can create envelopes, edit them, delete them,
+    transfer money between them. 
+
+  TODO List:
+    1) refactor code - lots of redundant error checking
+    2) implement "total budget" and track that with real-time
+        updates
+    3) write & read envelope data to/from a database or file to preserve
+        data between server sessions
+*/
+
 //import the express framework
 const express = require("express");
 
