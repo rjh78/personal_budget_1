@@ -10,17 +10,25 @@ const bodyParser = require("body-parser");
 
 const PORT = 4001;
 const totalBudget = 0;
-const envelope_array = [];
+const envelope_array = [
+  { id: 1, title: "Charitable Donations", budget: 50 },
+  { id: 2, title: "Mortgage", budget: 3550 },
+  { id: 3, title: "Utilities", budget: 350 },
+  { id: 4, title: "Food-Market", budget: 275 },
+  { id: 5, title: "Food-Eating Out", budget: 150 },
+  { id: 6, title: "IRA Contribution", budget: 625 },
+  { id: 7, title: "Home", budget: 350 },
+];
 /*
-{"title": "Charitable Donations", "budget": 50}
-{"title": "Mortgage", "budget": 3550}
-{"title": "Utilities", "budget": 350}
-{"title": "Food-Market", "budget": 275}
-{"title": "Food-Eating Out", "budget": 150}
-{"title": "IRA Contribution", "budget": 625}
-{"title": "Home", "budget": 350}
+{"id": 1, "title": "Charitable Donations", "budget": 50},
+{"id": 2, "title": "Mortgage", "budget": 3550},
+{"id": 3, "title": "Utilities", "budget": 350},
+{"id": 4, "title": "Food-Market", "budget": 275},
+{"id": 5, "title": "Food-Eating Out", "budget": 150},
+{"id": 6, "title": "IRA Contribution", "budget": 625},
+{"id": 7, "title": "Home", "budget": 350}
 */
-let envId = 1;
+let envId = 8;
 
 //req.body parsing middleware
 app.use(bodyParser.json());
@@ -97,6 +105,45 @@ app.put("/envelopes/:id", (req, res, next) => {
     searchEnv.budget += dollarAmt;
   }
   res.json(searchEnv);
+});
+
+//move money from the :from id to the :to id
+app.put("/envelopes/transfer/:from/:to", (req, res, next) => {
+  let fromId = Number(req.params.from);
+  let toId = Number(req.params.to);
+  let moveAmt = Number(req.query.budget);
+  let lastId = envelope_array[envelope_array.length - 1].id;
+
+  if (fromId < 1 || fromId > lastId || toId < 1 || toId > lastId) {
+    return res
+      .status(404)
+      .send(`Error 404: 'from' id or 'to' id is out of range.`);
+  }
+
+  const getArrayIndexFrom = (element) => element.id === fromId;
+  const getArrayIndexTo = (element) => element.id === toId;
+
+  if (
+    envelope_array.findIndex(getArrayIndexFrom) === -1 ||
+    envelope_array.findIndex(getArrayIndexTo) === -1
+  ) {
+    return res
+      .status(404)
+      .send(
+        `Error 404: 'from' id or 'to' id was not found. It may have been deleted.`
+      );
+  }
+
+  const arrayIndexFrom = envelope_array.findIndex(getArrayIndexFrom);
+  const arrayIndexTo = envelope_array.findIndex(getArrayIndexTo);
+
+  envelope_array[arrayIndexFrom].budget =
+    envelope_array[arrayIndexFrom].budget - moveAmt;
+
+  envelope_array[arrayIndexTo].budget =
+    envelope_array[arrayIndexTo].budget + moveAmt;
+
+  res.status(200).send(envelope_array);
 });
 
 app.delete("/envelopes/:id", (req, res, next) => {
